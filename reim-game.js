@@ -110,6 +110,10 @@ function checkAnswer() {
         scoreEl.textContent = score;
         resultDiv.className = 'result correct';
         resultText.textContent = `✅ "${userAnswer}" reimt sich auf "${currentWord}" – Richtig!`;
+        if (score === 10) {
+            launchConfetti();
+            resultText.textContent += ' 🎉 10 Reime! KONFETTI!';
+        }
     } else {
         resultDiv.className = 'result wrong';
         const hint = rhymeDatabase[currentWord] ? rhymeDatabase[currentWord][0] : '...';
@@ -153,6 +157,66 @@ resetBtn.addEventListener('click', () => {
     roundEl.textContent = '1';
     newRound();
 });
+
+// Konfetti-Effekt
+function launchConfetti() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'confetti-canvas';
+    canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = [];
+    const colors = ['#e94560', '#4caf50', '#ff9800', '#2196f3', '#9c27b0', '#ffeb3b'];
+
+    for (let i = 0; i < 150; i++) {
+        pieces.push({
+            x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+            y: canvas.height + 10,
+            vx: (Math.random() - 0.5) * 15,
+            vy: -(Math.random() * 20 + 10),
+            size: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rotationSpeed: (Math.random() - 0.5) * 10,
+            gravity: 0.4
+        });
+    }
+
+    let frame = 0;
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+
+        pieces.forEach(p => {
+            p.x += p.vx;
+            p.vy += p.gravity;
+            p.y += p.vy;
+            p.rotation += p.rotationSpeed;
+            p.vx *= 0.99;
+
+            if (p.y < canvas.height + 50) {
+                active = true;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+                ctx.restore();
+            }
+        });
+
+        frame++;
+        if (active && frame < 200) {
+            requestAnimationFrame(animate);
+        } else {
+            canvas.remove();
+        }
+    }
+    animate();
+}
 
 // Spiel starten
 newRound();
