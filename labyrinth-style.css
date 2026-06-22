@@ -1,0 +1,142 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.container {
+    text-align: center;
+    padding: 1.5rem;
+    max-width: 600px;
+    width: 100%;
+}
+
+h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.3rem;
+}
+
+.subtitle {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 1rem;
+}
+
+.info-bar {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+#maze-canvas {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: #0a0a1a;
+    display: block;
+    margin: 0 auto 1rem;
+    max-width: 100%;
+}
+
+.result {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid #4caf50;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+#result-text {
+    font-size: 1.2rem;
+}
+
+.controls {
+    margin-bottom: 1rem;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: #fff;
+}
+
+.mobile-controls {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 1rem;
+}
+
+.dir-row {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.dir-btn {
+    width: 55px;
+    height: 55px;
+    font-size: 1.5rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dir-btn:active {
+    background: rgba(233, 69, 96, 0.3);
+    border-color: #e94560;
+}
+
+.game-nav {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.game-nav a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.game-nav a:hover {
+    color: #fff;
+}
+
+@media (pointer: coarse) {
+    .mobile-controls {
+        display: flex;
+    }
+}
+
+@media (max-width: 500px) {
+    .mobile-controls {
+        display: flex;
+    }
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schere Stein Papier</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>✊ Schere Stein Papier ✋</h1>
+        <p class="subtitle">Wähle deinen Zug!</p>
+
+        <div class="choices">
+            <button class="choice-btn" data-choice="schere" title="Schere">✌️</button>
+            <button class="choice-btn" data-choice="stein" title="Stein">✊</button>
+            <button class="choice-btn" data-choice="papier" title="Papier">✋</button>
+        </div>
+
+        <div class="result" id="result">
+            <p id="result-text">Triff deine Wahl...</p>
+        </div>
+
+        <div class="scoreboard">
+            <div class="score">
+                <span class="label">Du</span>
+                <span class="value" id="player-score">0</span>
+            </div>
+            <div class="score">
+                <span class="label">Computer</span>
+                <span class="value" id="computer-score">0</span>
+            </div>
+        </div>
+
+        <button class="reset-btn" id="reset-btn">🔄 Neues Spiel</button>
+
+        <nav style="margin-top:2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.1);">
+            <a href="reim.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">🎤 Reim-Challenge</a> |
+            <a href="labyrinth.html" style="color:rgba(255,255,255,0.6);text-decoration:none;">🏰 Labyrinth</a>
+        </nav>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

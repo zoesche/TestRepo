@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labyrinth</title>
+    <link rel="stylesheet" href="labyrinth-style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🏰 Labyrinth</h1>
+        <p class="subtitle">Finde den Ausgang! Steuerung: Pfeiltasten oder WASD</p>
+
+        <div class="info-bar">
+            <div class="timer">⏱️ <span id="timer">00:00</span></div>
+            <div class="level">Level: <span id="level">1</span></div>
+        </div>
+
+        <canvas id="maze-canvas"></canvas>
+
+        <div class="result" id="result" style="display:none;">
+            <p id="result-text"></p>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" id="new-maze-btn">🔄 Neues Labyrinth</button>
+        </div>
+
+        <div class="mobile-controls" id="mobile-controls">
+            <button class="dir-btn" data-dir="up">⬆️</button>
+            <div class="dir-row">
+                <button class="dir-btn" data-dir="left">⬅️</button>
+                <button class="dir-btn" data-dir="down">⬇️</button>
+                <button class="dir-btn" data-dir="right">➡️</button>
+            </div>
+        </div>
+
+        <nav class="game-nav">
+            <a href="index.html">✊ Schere Stein Papier</a> |
+            <a href="reim.html">🎤 Reim-Challenge</a>
+        </nav>
+    </div>
+
+    <script src="labyrinth-game.js"></script>
+</body>
+</html>
