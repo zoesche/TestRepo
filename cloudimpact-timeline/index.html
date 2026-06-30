@@ -229,6 +229,54 @@
       background: var(--cp-accent-soft);
       color: var(--cp-accent);
     }
+    .month-dropdown {
+      position: relative;
+      min-width: 220px;
+    }
+    .month-dropdown-button {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+      color: var(--cp-text);
+      padding: 8px 34px 8px 11px;
+      text-align: left;
+      cursor: pointer;
+      position: relative;
+    }
+    .month-dropdown-button::after {
+      content: "v";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--cp-text-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .month-dropdown.open .month-dropdown-button {
+      border-color: var(--cp-accent);
+      box-shadow: 0 0 0 3px var(--cp-accent-soft);
+    }
+    .month-menu {
+      display: none;
+      position: absolute;
+      z-index: 20;
+      top: calc(100% + 6px);
+      left: 0;
+      min-width: 280px;
+      max-height: 280px;
+      overflow: auto;
+      padding: 8px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-panel-strong);
+      box-shadow: var(--cp-shadow);
+    }
+    .month-dropdown.open .month-menu {
+      display: grid;
+    }
     .metrics {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -596,7 +644,12 @@
       </div>
       <div class="strip-group">
         <div class="strip-title" data-i18n="months">Months</div>
-        <div class="multi-check" id="monthOptions" aria-label="Months"></div>
+        <div class="month-dropdown" id="monthDropdown">
+          <button type="button" class="month-dropdown-button" id="monthDropdownButton" aria-expanded="false">
+            <span id="monthDropdownLabel">All months</span>
+          </button>
+          <div class="multi-check month-menu" id="monthOptions" aria-label="Months"></div>
+        </div>
       </div>
     </section>
 
@@ -15029,6 +15082,9 @@
       search: document.getElementById("search"),
       portfolio: document.getElementById("portfolio"),
       statusOptions: document.getElementById("statusOptions"),
+      monthDropdown: document.getElementById("monthDropdown"),
+      monthDropdownButton: document.getElementById("monthDropdownButton"),
+      monthDropdownLabel: document.getElementById("monthDropdownLabel"),
       monthOptions: document.getElementById("monthOptions"),
       priority: document.getElementById("priority"),
       labels: document.getElementById("labels"),
@@ -15059,6 +15115,9 @@
         portfolio: "Portfolio",
         status: "Status",
         months: "Monate",
+        allMonths: "Alle Monate",
+        noMonths: "Keine Monate",
+        monthsSelected: count => `${count} Monate ausgewählt`,
         priority: "Priorität",
         labels: "Labels",
         timeframe: "Zeitraum",
@@ -15127,6 +15186,9 @@
         portfolio: "Portfolio",
         status: "Status",
         months: "Months",
+        allMonths: "All months",
+        noMonths: "No months",
+        monthsSelected: count => `${count} months selected`,
         priority: "Priority",
         labels: "Labels",
         timeframe: "Timeframe",
@@ -15195,6 +15257,9 @@
         portfolio: "Portefeuille",
         status: "Statut",
         months: "Mois",
+        allMonths: "Tous les mois",
+        noMonths: "Aucun mois",
+        monthsSelected: count => `${count} mois selectionnes`,
         priority: "Priorité",
         labels: "Labels",
         timeframe: "Période",
@@ -15451,7 +15516,8 @@
       }).sort(sortByStartThenNumber);
     }
 
-    function matchesBaseFilters(item, f) {
+    function matchesBaseFilters(item, f, options = {}) {
+      const includeMonths = options.includeMonths !== false;
       const rangeEnd = f.range === "all" ? null : addDays(today, Number(f.range));
       const officialLabels = labelsForItem(item);
       const haystack = `${item.title} ${officialLabels.join(" ")} ${item.owner} ${item.portfolio} ${item.status} ${item.priority}`.toLowerCase();
@@ -15460,7 +15526,7 @@
       return (!f.search || haystack.includes(f.search))
         && (!f.portfolio || item.portfolio === f.portfolio)
         && (f.statuses.includes(item.status))
-        && itemMatchesSelectedMonths(item, f.months)
+        && (!includeMonths || itemMatchesSelectedMonths(item, f.months))
         && (!f.priority || item.priority === f.priority)
         && (!f.labels || officialLabels.includes(f.labels))
         && startsBeforeRangeEnd && endsAfterToday;
@@ -15532,10 +15598,40 @@
       return new Date(year, month - 1, 1).toLocaleDateString(t("locale"), { month: "short", year: "2-digit" });
     }
 
-    function monthValues() {
-      if (!items.length) return [];
-      const minDate = new Date(Math.min(...items.map(item => new Date(item.start))));
-      const maxDate = new Date(Math.max(...items.map(item => new Date(item.end))));
+    function timelineItemsForMonthOptions() {
+      const f = currentFilters();
+      const candidates = items.filter(item => matchesBaseFilters(item, f, { includeMonths: false }));
+      const displayItems = candidates.filter(item => {
+        const executiveRelevant = f.viewMode !== "executive" || isExecutiveRelevant(item);
+        return executiveRelevant;
+      });
+      const allByNumber = new Map(items.map(item => [itemNumber(item), item]).filter(([number]) => number));
+      const optionItems = new Map(displayItems.map(item => [itemNumber(item), item]).filter(([number]) => number));
+      const epicNumbers = new Set();
+
+      displayItems.forEach(item => {
+        const number = itemNumber(item);
+        if (isEpic(item)) epicNumbers.add(number);
+        parentEpicNumbers(item).forEach(epicNumber => {
+          if (allByNumber.has(epicNumber)) epicNumbers.add(epicNumber);
+        });
+      });
+
+      epicNumbers.forEach(epicNumber => {
+        const epic = allByNumber.get(epicNumber);
+        if (epic) optionItems.set(epicNumber, epic);
+        candidates
+          .filter(item => !isEpic(item) && parentEpicNumbers(item).includes(epicNumber))
+          .forEach(item => optionItems.set(itemNumber(item), item));
+      });
+
+      return [...optionItems.values()];
+    }
+
+    function monthValues(sourceItems = items) {
+      if (!sourceItems.length) return [];
+      const minDate = new Date(Math.min(...sourceItems.map(item => new Date(item.start))));
+      const maxDate = new Date(Math.max(...sourceItems.map(item => new Date(item.end))));
       minDate.setDate(1);
       maxDate.setDate(1);
       const values = [];
@@ -15551,17 +15647,33 @@
       return Array.from(els.monthOptions.querySelectorAll('input[type="checkbox"]:checked')).map(input => input.value);
     }
 
-    function renderMonthOptions() {
-      const values = monthValues();
-      const hadOptions = els.monthOptions.querySelectorAll('input[type="checkbox"]').length > 0;
+    function updateMonthDropdownLabel(values = monthValues(timelineItemsForMonthOptions())) {
       const selected = selectedMonths();
-      const selectedSet = new Set(hadOptions ? selected : values);
+      if (!values.length || !selected.length) {
+        els.monthDropdownLabel.textContent = t("noMonths");
+      } else if (selected.length === values.length) {
+        els.monthDropdownLabel.textContent = t("allMonths");
+      } else if (selected.length === 1) {
+        els.monthDropdownLabel.textContent = monthLabel(selected[0]);
+      } else {
+        els.monthDropdownLabel.textContent = t("monthsSelected", selected.length);
+      }
+    }
+
+    function renderMonthOptions() {
+      const values = monthValues(timelineItemsForMonthOptions());
+      const existingInputs = Array.from(els.monthOptions.querySelectorAll('input[type="checkbox"]'));
+      const hadOptions = existingInputs.length > 0;
+      const selected = selectedMonths();
+      const allPreviouslySelected = hadOptions && selected.length === existingInputs.length;
+      const selectedSet = new Set(!hadOptions || allPreviouslySelected ? values : selected.filter(value => values.includes(value)));
       els.monthOptions.innerHTML = values.map(key => `
         <label>
           <input type="checkbox" value="${escapeHtml(key)}" ${selectedSet.has(key) ? "checked" : ""} />
           <span>${escapeHtml(monthLabel(key))}</span>
         </label>
       `).join("");
+      updateMonthDropdownLabel(values);
     }
 
     function itemMatchesSelectedMonths(item, selected) {
@@ -15813,12 +15925,13 @@
     function renderTimeline(data) {
       const svg = els.timeline;
       const width = 1280, left = 340, right = 72, top = 104, rowH = 70, bottom = 48;
-      const minDate = data.length ? new Date(Math.min(...data.map(i => new Date(i.start)))) : today;
-      const maxDate = data.length ? new Date(Math.max(...data.map(i => new Date(i.end)))) : addDays(today, 180);
+      const timelineRows = timelineRowsFor(data);
+      const timelineItems = timelineRows.map(row => row.item);
+      const minDate = timelineItems.length ? new Date(Math.min(...timelineItems.map(i => new Date(i.start)))) : today;
+      const maxDate = timelineItems.length ? new Date(Math.max(...timelineItems.map(i => new Date(i.end)))) : addDays(today, 180);
       minDate.setDate(1);
       maxDate.setDate(1);
       maxDate.setMonth(maxDate.getMonth() + 1);
-      const timelineRows = timelineRowsFor(data);
       const height = top + Math.max(timelineRows.length, 1) * rowH + bottom;
       const chartW = width - left - right;
       const span = Math.max(1, maxDate - minDate);
@@ -15948,11 +16061,28 @@
       setTimeout(() => els.toast.classList.remove("show"), 2200);
     }
 
+    function setMonthDropdownOpen(open) {
+      els.monthDropdown.classList.toggle("open", open);
+      els.monthDropdownButton.setAttribute("aria-expanded", String(open));
+    }
+
     applyTheme();
 
     document.querySelectorAll("input, select:not(#language):not(#themeMode)").forEach(el => el.addEventListener("input", render));
     els.statusOptions.addEventListener("change", render);
-    els.monthOptions.addEventListener("change", render);
+    els.monthOptions.addEventListener("change", () => {
+      render();
+      setMonthDropdownOpen(true);
+    });
+    els.monthDropdownButton.addEventListener("click", event => {
+      event.stopPropagation();
+      setMonthDropdownOpen(!els.monthDropdown.classList.contains("open"));
+    });
+    els.monthDropdown.addEventListener("click", event => event.stopPropagation());
+    document.addEventListener("click", () => setMonthDropdownOpen(false));
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") setMonthDropdownOpen(false);
+    });
     els.timeline.addEventListener("click", event => {
       const epicRow = event.target.closest("[data-epic-number]");
       if (!epicRow) return;
