@@ -124,6 +124,12 @@
     h1 .title-line {
       display: block;
     }
+    h1 .title-gradient {
+      background: linear-gradient(90deg, var(--cp-accent), var(--cp-danger), var(--cp-warning));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
     h1 .title-accent {
       color: var(--cp-accent);
     }
@@ -618,7 +624,7 @@
   <main class="app">
     <header>
       <div>
-        <h1><span class="title-line">Cloud Impact | <span class="title-accent">Github</span></span> <span class="title-line">Project Timeline</span></h1>
+        <h1><span class="title-line"><span class="title-gradient">Cloud Impact</span> | <span class="title-accent">Github</span></span> <span class="title-line">Project Timeline</span></h1>
         <p class="subtitle" data-i18n="subtitle">Wiederverwendbare Roadmap für alle CSP-relevanten GitHub-Themen: filtern, aktualisieren, als PNG/SVG/CSV exportieren oder direkt als PDF drucken.</p>
       </div>
       <div class="toolbar">
