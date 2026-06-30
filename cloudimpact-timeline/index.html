@@ -172,14 +172,20 @@
       box-shadow: 0 0 0 3px var(--cp-accent-soft);
     }
     .status-strip {
-      display: flex;
-      align-items: center;
+      display: grid;
+      grid-template-columns: minmax(220px, auto) minmax(0, 1fr);
       gap: 12px;
       margin-bottom: 16px;
       border: 1px solid var(--cp-border);
       background: var(--cp-panel);
       border-radius: 16px;
       padding: 10px 12px;
+    }
+    .strip-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
     }
     .status-strip .strip-title {
       color: var(--cp-text-muted);
@@ -514,7 +520,8 @@
     @media (max-width: 1100px) {
       header, .content { grid-template-columns: 1fr; }
       .filters, .metrics { grid-template-columns: repeat(2, 1fr); }
-      .status-strip { align-items: flex-start; flex-direction: column; }
+      .status-strip { grid-template-columns: 1fr; }
+      .strip-group { align-items: flex-start; flex-direction: column; }
       .drawer { position: static; }
     }
     @media print {
@@ -583,8 +590,14 @@
       </label>
     </section>
     <section class="status-strip" aria-label="Status">
-      <div class="strip-title" data-i18n="status">Status</div>
-      <div class="multi-check" id="statusOptions" aria-label="Status"></div>
+      <div class="strip-group">
+        <div class="strip-title" data-i18n="status">Status</div>
+        <div class="multi-check" id="statusOptions" aria-label="Status"></div>
+      </div>
+      <div class="strip-group">
+        <div class="strip-title" data-i18n="months">Months</div>
+        <div class="multi-check" id="monthOptions" aria-label="Months"></div>
+      </div>
     </section>
 
     <section class="metrics" aria-label="Kennzahlen">
@@ -15016,6 +15029,7 @@
       search: document.getElementById("search"),
       portfolio: document.getElementById("portfolio"),
       statusOptions: document.getElementById("statusOptions"),
+      monthOptions: document.getElementById("monthOptions"),
       priority: document.getElementById("priority"),
       labels: document.getElementById("labels"),
       range: document.getElementById("range"),
@@ -15044,6 +15058,7 @@
         searchPlaceholder: "Titel, Label, Owner...",
         portfolio: "Portfolio",
         status: "Status",
+        months: "Monate",
         priority: "Priorität",
         labels: "Labels",
         timeframe: "Zeitraum",
@@ -15111,6 +15126,7 @@
         searchPlaceholder: "Title, label, owner...",
         portfolio: "Portfolio",
         status: "Status",
+        months: "Months",
         priority: "Priority",
         labels: "Labels",
         timeframe: "Timeframe",
@@ -15178,6 +15194,7 @@
         searchPlaceholder: "Titre, libellé, owner...",
         portfolio: "Portefeuille",
         status: "Statut",
+        months: "Mois",
         priority: "Priorité",
         labels: "Labels",
         timeframe: "Période",
@@ -15414,6 +15431,7 @@
         search: els.search.value.trim().toLowerCase(),
         portfolio: els.portfolio.value,
         statuses: selectedStatuses(),
+        months: selectedMonths(),
         priority: els.priority.value,
         labels: els.labels.value,
         range: els.range.value,
@@ -15442,6 +15460,7 @@
       return (!f.search || haystack.includes(f.search))
         && (!f.portfolio || item.portfolio === f.portfolio)
         && (f.statuses.includes(item.status))
+        && itemMatchesSelectedMonths(item, f.months)
         && (!f.priority || item.priority === f.priority)
         && (!f.labels || officialLabels.includes(f.labels))
         && startsBeforeRangeEnd && endsAfterToday;
@@ -15504,9 +15523,63 @@
       `).join("");
     }
 
+    function monthKey(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function monthLabel(key) {
+      const [year, month] = key.split("-").map(Number);
+      return new Date(year, month - 1, 1).toLocaleDateString(t("locale"), { month: "short", year: "2-digit" });
+    }
+
+    function monthValues() {
+      if (!items.length) return [];
+      const minDate = new Date(Math.min(...items.map(item => new Date(item.start))));
+      const maxDate = new Date(Math.max(...items.map(item => new Date(item.end))));
+      minDate.setDate(1);
+      maxDate.setDate(1);
+      const values = [];
+      const cursor = new Date(minDate);
+      while (cursor <= maxDate) {
+        values.push(monthKey(cursor));
+        cursor.setMonth(cursor.getMonth() + 1);
+      }
+      return values;
+    }
+
+    function selectedMonths() {
+      return Array.from(els.monthOptions.querySelectorAll('input[type="checkbox"]:checked')).map(input => input.value);
+    }
+
+    function renderMonthOptions() {
+      const values = monthValues();
+      const hadOptions = els.monthOptions.querySelectorAll('input[type="checkbox"]').length > 0;
+      const selected = selectedMonths();
+      const selectedSet = new Set(hadOptions ? selected : values);
+      els.monthOptions.innerHTML = values.map(key => `
+        <label>
+          <input type="checkbox" value="${escapeHtml(key)}" ${selectedSet.has(key) ? "checked" : ""} />
+          <span>${escapeHtml(monthLabel(key))}</span>
+        </label>
+      `).join("");
+    }
+
+    function itemMatchesSelectedMonths(item, selected) {
+      if (!selected.length) return false;
+      const itemStart = new Date(item.start);
+      const itemEnd = new Date(item.end);
+      return selected.some(key => {
+        const [year, month] = key.split("-").map(Number);
+        const monthStart = new Date(year, month - 1, 1);
+        const monthEnd = new Date(year, month, 0, 23, 59, 59, 999);
+        return itemStart <= monthEnd && itemEnd >= monthStart;
+      });
+    }
+
     function refreshOptions() {
       setOptions(els.portfolio, items.map(i => i.portfolio), t("all"));
       renderStatusOptions();
+      renderMonthOptions();
       setOptions(els.priority, items.map(i => i.priority), t("all"));
       setOptions(els.labels, repoLabelNames, t("all"));
     }
@@ -15879,6 +15952,7 @@
 
     document.querySelectorAll("input, select:not(#language):not(#themeMode)").forEach(el => el.addEventListener("input", render));
     els.statusOptions.addEventListener("change", render);
+    els.monthOptions.addEventListener("change", render);
     els.timeline.addEventListener("click", event => {
       const epicRow = event.target.closest("[data-epic-number]");
       if (!epicRow) return;
