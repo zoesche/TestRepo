@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Full Stack Certification | Complete Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --orange: #FF5800; --orange-light: #FF7A33;
+    --solar-1: #FF5800; --solar-2: #FFB314;
+    --navy: #0B1F3A; --navy-light: #1A365D;
+    --bg: #F7F8FA; --bg-subtle: #FAFBFC;
+    --border: #E5E7EB; --border-strong: #D1D5DB;
+    --text: #111827; --text-muted: #6B7280;
+    --success: #059669; --success-bg: #ECFDF5;
+    --warning: #D97706; --warning-bg: #FEF3C7;
+    --info: #2563EB; --info-bg: #EFF6FF;
+    --locked: #9CA3AF; --locked-bg: #F3F4F6;
+  }
+  body { font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; min-height: 100vh; }
+  header { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 55%, var(--orange) 130%); color: white; position: relative; overflow: hidden; }
+  header::before { content: ""; position: absolute; top: -50%; right: -20%; width: 60%; height: 200%; background: radial-gradient(circle, rgba(255,88,0,0.15) 0%, transparent 70%); pointer-events: none; }
+  .hero-inner { max-width: 1400px; margin: 0 auto; padding: 24px 32px 32px; position: relative; z-index: 1; }
+  .breadcrumb { font-size: 12px; color: rgba(255,255,255,0.6); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 16px; }
+  .breadcrumb span { color: var(--solar-2); }
+  .hero-title { font-size: 32px; font-weight: 600; margin-bottom: 6px; }
+  .hero-subtitle { font-size: 15px; color: #B3C1D6; margin-bottom: 24px; }
+  .hero-tagline { display: inline-block; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--solar-2); font-weight: 600; margin-bottom: 20px; }
+  .hero-tagline::before { content: "▪ "; }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 18px 20px; }
+  .stat-label { font-size: 11px; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px; }
+  .stat-value { font-size: 26px; font-weight: 700; }
+  .stat-value.orange { color: var(--solar-2); }
+  .stat-progress-bar { height: 4px; background: rgba(255,255,255,0.12); border-radius: 999px; overflow: hidden; margin-top: 10px; }
+  .stat-progress-fill { height: 100%; background: linear-gradient(90deg, var(--solar-1), var(--solar-2)); border-radius: 999px; transition: width 0.6s ease; }
+  main { max-width: 1400px; margin: -12px auto 0; padding: 0 32px 32px; position: relative; z-index: 2; }
+  .tabs-container { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 6px; margin-bottom: 20px; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .tab { flex: 1; min-width: 130px; padding: 12px 16px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 13px; cursor: pointer; border-radius: 8px; font-family: inherit; display: flex; align-items: center; gap: 10px; text-align: left; }
+  .tab:hover { background: var(--bg); color: var(--text); }
+  .tab.active { background: var(--navy); color: white; }
+  .tab-emoji { font-size: 20px; }
+  .tab-content { flex: 1; min-width: 0; }
+  .tab-name { font-size: 14px; font-weight: 600; }
+  .tab-meta { font-size: 11px; opacity: 0.75; font-weight: 500; margin-top: 1px; }
+  .profile-card { background: white; border-radius: 14px; padding: 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 20px; position: relative; overflow: hidden; }
+  .profile-card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, var(--solar-1), var(--solar-2)); }
+  .profile-info h2 { font-size: 24px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 12px; }
+  .profile-role { color: var(--text-muted); font-size: 14px; margin-bottom: 12px; }
+  .profile-focus { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--bg); border-radius: 999px; font-size: 12px; color: var(--text); font-weight: 500; }
+  .profile-focus::before { content: "▸"; color: var(--orange); font-weight: 700; }
+  .module { background: white; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); overflow: hidden; border-left: 4px solid var(--border); }
+  .module.done { border-left-color: var(--success); }
+  .module.exam { border-left-color: var(--orange); background: linear-gradient(90deg, #FFF7ED 0%, white 60%); }
+  .module.exam-optional { border-left-color: var(--info); background: linear-gradient(90deg, #EFF6FF 0%, white 60%); }
+  .module-header { padding: 18px 24px; display: flex; align-items: center; gap: 16px; cursor: pointer; user-select: none; }
+  .module-header:hover { background: var(--bg-subtle); }
+  .module-number { width: 40px; height: 40px; border-radius: 10px; background: var(--navy); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .module.done .module-number { background: var(--success); }
+  .module.exam .module-number { background: var(--orange); }
+  .module.exam-optional .module-number { background: var(--info); }
+  .module-info { flex: 1; min-width: 0; }
+  .module-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .module-meta { font-size: 12px; color: var(--text-muted); }
+  .module-actions { display: flex; align-items: center; gap: 12px; }
+  .status-pill { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .status-pill.done { background: var(--success-bg); color: var(--success); border: 1px solid #A7F3D0; }
+  .status-pill.progress { background: var(--warning-bg); color: var(--warning); border: 1px solid #FDE68A; }
+  .status-pill.locked { background: var(--locked-bg); color: var(--locked); border: 1px solid var(--border); }
+  .status-pill.exam { background: var(--orange); color: white; border: none; }
+  .status-pill.optional { background: var(--info-bg); color: var(--info); border: 1px solid #BFDBFE; }
+  .chevron { color: var(--text-muted); font-size: 14px; }
+  .module.collapsed .chevron { transform: rotate(-90deg); }
+  .task-list { padding: 4px 24px 24px 76px; overflow: hidden; }
+  .module.collapsed .task-list { display: none; }
+  .task { display: flex; align-items: flex-start; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--bg); }
+  .task:last-child { border-bottom: none; }
+  .task input[type="checkbox"] { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border: 2px solid var(--border-strong); border-radius: 5px; cursor: pointer; background: white; flex-shrink: 0; margin-top: 2px; position: relative; }
+  .task input[type="checkbox"]:hover { border-color: var(--orange); }
+  .task input[type="checkbox"]:checked { background: var(--orange); border-color: var(--orange); }
+  .task input[type="checkbox"]:checked::after { content: ""; position: absolute; top: 2px; left: 5px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .task-content { flex: 1; min-width: 0; }
+  .task-title { font-weight: 600; color: var(--text); font-size: 14px; }
+  .task input[type="checkbox"]:checked ~ .task-content .task-title { text-decoration: line-through; color: var(--text-muted); }
+  .task-desc { font-size: 12.5px; color: var(--text-muted); margin-top: 4px; }
+  .task-link { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: white; background: var(--orange); padding: 6px 12px; border-radius: 6px; text-decoration: none; margin-top: 8px; font-weight: 600; }
+  .task-link:hover { background: var(--orange-light); }
+  .task-guide { margin-top: 8px; border: 1px solid #BFDBFE; border-radius: 6px; overflow: hidden; background: var(--info-bg); }
+  .task-guide-toggle { width: 100%; background: var(--info-bg); border: none; padding: 8px 12px; text-align: left; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-family: inherit; color: #1E3A8A; }
+  .task-guide-toggle:hover { background: #DBEAFE; }
+  .task-guide-title { font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; color: var(--info); }
+  .task-guide-chevron { color: var(--info); font-size: 11px; font-weight: 700; }
+  .task-guide.open .task-guide-chevron { transform: rotate(90deg); }
+  .task-guide-body { display: none; padding: 8px 14px 12px 14px; font-size: 12px; color: #1E3A8A; }
+  .task-guide.open .task-guide-body { display: block; }
+  .task-guide ol { margin-left: 18px; margin-top: 4px; }
+  .task-guide li { margin-bottom: 3px; line-height: 1.5; }
+  .task-guide code { background: white; padding: 1px 6px; border-radius: 3px; font-family: monospace; font-size: 11px; color: var(--navy); border: 1px solid var(--border); }
+  .action-bar { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid var(--border); }
+  .btn { padding: 9px 16px; border: 1px solid var(--border); background: white; color: var(--text); font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; font-family: inherit; }
+  .btn:hover { background: var(--bg); }
+  .btn-primary { background: var(--navy); color: white; border-color: var(--navy); }
+  .btn-primary:hover { background: var(--navy-light); }
+  .info-panel { background: var(--info-bg); border-left: 4px solid var(--info); padding: 16px 22px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; color: #1E3A8A; }
+  .info-panel strong { color: #1E40AF; }
+  .info-panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--info); margin-bottom: 4px; }
+  footer { text-align: center; padding: 40px 24px 24px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 40px; }
+  .footer-brand { font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .footer-tagline { color: var(--orange); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; font-size: 11px; margin-bottom: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="hero-inner">
+    <div class="breadcrumb">AMES365 · <span>AVANADE CLOUD IMPACT</span> · Complete Certification Guide</div>
+    <div class="hero-tagline">Do what matters</div>
+    <h1 class="hero-title">🏆 Claude Full Stack Certification</h1>
+    <div class="hero-subtitle">MWP Engineering · Jeder Task mit Direktlink oder Klick-Anleitung</div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Team Fortschritt</div>
+        <div class="stat-value" id="teamPercentValue">0%</div>
+        <div class="stat-progress-bar"><div class="stat-progress-fill" id="teamProgressFill" style="width:0%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Zertifikate erreicht</div>
+        <div class="stat-value orange" id="teamCertCount">0 / 13</div>
+        <div class="stat-progress-bar"><div class="stat-progress-fill" id="teamCertFill" style="width:0%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Kosten für Team</div>
+        <div class="stat-value orange">€ 0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Programm-Dauer</div>
+        <div class="stat-value">10 Wochen</div>
+      </div>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="tabs-container"><div class="tabs" id="tabs"></div></div>
+  <div id="content"></div>
+</main>
+<footer>
+  <div class="footer-brand">AMES365 · AVANADE CLOUD IMPACT</div>
+  <div class="footer-tagline">Do what matters</div>
+  ©2026 Avanade Inc. All Rights Reserved.
+</footer>
+<script>
+const team = [
+  { id:"michael", name:"Michael Waltner", role:"Manager, MWP Engineering", emoji:"👨‍💼", focus:"Vibe-Coder · Program Lead", location:"Vienna", certs:{"CCAO-F":"required","CCDV-F":"optional","CCA-F":"required","CCA-P":"required"}},
+  { id:"zoe", name:"Zoe Scheer", role:"Sr Analyst, MWP Engineering", emoji:"👩‍💻", focus:"Vibe-Coder · Skill Engineer", location:"Munich", certs:{"CCAO-F":"required","CCDV-F":"optional","CCA-F":"required","CCA-P":"required"}},
+  { id:"christian", name:"Christian Pardun", role:"Sr Consultant, Application Architect", emoji:"🧑‍💻", focus:"Full Dev · MCP Architect", location:"Düsseldorf", certs:{"CCAO-F":"required","CCDV-F":"required","CCA-F":"required","CCA-P":"required"}},
+  { id:"ludwig", name:"Ludwig Hufnagl", role:"Sr Consultant, Modern Workplace", emoji:"⚙️", focus:"Automation Dev · PowerShell", location:"Vienna", certs:{"CCAO-F":"required","CCDV-F":"required","CCA-F":"required","CCA-P":"optional"}}
+];
+const commonWeeks = [
+  { id:"w0", title:"Woche 0 · Setup & Access Requests", meta:"~1 Std · Foundation", tasks:[
+    {id:"w0-1", title:"Skilljar Account (Anthropic Academy) anlegen", desc:"Basis-Kurse für alle", link:"https://anthropic.skilljar.com/", guide:["Klicke auf <b>Sign in</b> oben rechts","Wähle <b>Create account</b>","Registriere dich mit Avanade E-Mail","Bestätige die Bestätigungsmail","Fertig – du bist eingeloggt"]},
+    {id:"w0-2", title:"Anthropic Partner Academy Zugang", desc:"Partner-exclusive Certifications", link:"https://anthropic-partners.skilljar.com/", guide:["Klicke <b>Sign In</b> oben rechts","Verwende Accenture oder Avanade E-Mail","Falls Fehler: Ryan Gould kontaktieren","Nach Freischaltung 4 Certification-Kacheln sichtbar"]},
+    {id:"w0-3", title:"CCAO-F Kachel öffnen", desc:"Associate Foundations", link:"https://anthropic-partners.skilljar.com/claude-certified-associate-foundations-certification", guide:["Partner Academy öffnen","Kachel Claude Certified Associate – Foundations","<b>Download the exam guide</b>","<b>Register for the exam</b>"]},
+    {id:"w0-4", title:"CCDV-F Kachel öffnen", desc:"Developer Foundations", link:"https://anthropic-partners.skilljar.com/claude-certified-developer-foundations-certification", guide:["Partner Academy","Kachel Claude Certified Developer – Foundations","<b>Download the exam guide</b>","<b>Register for the exam</b>"]},
+    {id:"w0-5", title:"CCA-F Kachel öffnen", desc:"Architect Foundations – Kernprüfung", link:"https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification/486716", guide:["Partner Academy","Kachel CCA-F","<b>Download the exam guide</b> (v0.2)","60 Fragen · 120 Min · 720/1000 Passing"]},
+    {id:"w0-6", title:"CCA-P Kachel öffnen", desc:"Architect Professional", guide:["Partner Academy: <b>See all certifications</b>","Kachel Claude Certified Architect – Professional","<b>Download exam guide</b>","<b>Register</b>"]},
+    {id:"w0-7", title:"Pearson VUE Account bestätigen", desc:"Prüfungen laufen über Pearson VUE", link:"https://www.pearsonvue.com/us/en/anthropic.html", guide:["Nach erstem <b>Register for the exam</b> Klick","Mail von Pearson VUE aktivieren","Username + Password notieren","OnVUE oder Test Center Wien"]},
+    {id:"w0-8", title:"OnVUE System Test", desc:"Setup validieren", link:"https://www.pearsonvue.com/us/en/anthropic/onvue.html", guide:["Auf Pearson VUE: <b>Run system test</b>","Win 10+/macOS 14+, Webcam, Mic","Kein Headset, 1 Monitor","Kein VPN am Prüfungstag"]},
+    {id:"w0-9", title:"Claude Enterprise aktivieren", desc:"Ihr habt Lizenz seit 19. Juni", link:"https://claude.ai/", guide:["<b>Continue with SSO</b>","Avanade E-Mail","Nach Login: Enterprise Plan sichtbar"]},
+    {id:"w0-10", title:"Claude Desktop Client installieren", desc:"Für lokale Dateien", link:"https://claude.ai/download", guide:["claude.ai unten links Avatar","<b>Download apps</b>","Mac: .dmg / Windows: .exe","Login mit SSO"]},
+    {id:"w0-11", title:"Credly Account einrichten", desc:"Badges über Credly", link:"https://info.credly.com/", guide:["<b>Sign In</b> oben rechts","<b>Create Account</b>","Mit Avanade E-Mail","Nach Prüfung: Mail von admin@credly.com","<b>Accept Your Badge</b>"]},
+    {id:"w0-12", title:"Team-Repo aufsetzen", desc:"Owner: Ludwig", guide:["Ludwig erstellt Repo mwp-claude-skills","Zugriff für Michael, Zoe, Christian","Struktur: /skills/, /prompts/, /docs/"]},
+    {id:"w0-13", title:"Team Kick-off Termin", desc:"30 Min Alignment", guide:["Michael sendet Outlook Invite","Titel: Claude Full Stack Kick-off","Agenda: Overview · Rollen · Access · Weekly Slot"]}
+  ]},
+  { id:"w1", title:"Woche 1 · Grundlagen", meta:"~4 Std · Anthropic Academy Core", tasks:[
+    {id:"w1-1", title:"Claude 101 abschließen", desc:"12 Lektionen · ~1 Std", link:"https://anthropic.skilljar.com/claude-101", guide:["Nach Login in Skilljar","<b>Enroll</b> klicken","12 Video-Lektionen","Abschluss-Quiz","Zertifikat als PDF speichern"]},
+    {id:"w1-2", title:"AI Fluency Framework", desc:"14 Lektionen · ~1.1 Std", link:"https://anthropic.skilljar.com/", guide:["Skilljar Dashboard","Suche AI Fluency","<b>Enroll</b>","14 Lektionen + Quiz"]},
+    {id:"w1-3", title:"AI Capabilities and Limitations", desc:"13 Lektionen · 15 Min", link:"https://claude.com/resources/courses", guide:["claude.com/resources/courses","Filter AI Fluency","Kurs öffnen"]},
+    {id:"w1-4", title:"Claude Platform 101", desc:"12 Lektionen · ~1 Std", link:"https://claude.com/resources/courses", guide:["claude.com/resources/courses","Kachel Claude Platform 101"]},
+    {id:"w1-5", title:"Erste Alltagsaufgabe lösen", desc:"z.B. Meeting Recap", guide:["Aufgabe aus Alltag wählen","claude.ai öffnen","Neuer Chat oder Projekt","Dateien uploaden","Klarer Prompt"]},
+    {id:"w1-6", title:"Ergebnis im Team-Chat teilen", desc:"Reflexion", guide:["Teams Chat MWP","Kurzer Post: Was, Prompt, Learning"]}
+  ]},
+  { id:"w2", title:"Woche 2 · CCAO-F Prüfung", meta:"120 Min · 60 Fragen · Warm-up · $0 Partner", exam:"CCAO-F", tasks:[
+    {id:"w2-1", title:"CCAO-F Exam Guide herunterladen", desc:"Offizieller Guide", link:"https://anthropic-partners.skilljar.com/claude-certified-associate-foundations-certification", guide:["Partner Academy CCAO-F","<b>Download the exam guide</b>","Domains: Output Eval 21% · Workflow 16% · Governance 15% · Prompting 14%"]},
+    {id:"w2-2", title:"Claude Features durchgehen", desc:"Projects, Artifacts, Styles", link:"https://claude.ai/", guide:["claude.ai einloggen","<b>Projects</b> anlegen","<b>Artifacts</b> testen","<b>Styles</b> ändern","<b>Web Search</b> aktivieren"]},
+    {id:"w2-3", title:"Claude for Work Guide", desc:"Governance + Deployment", link:"https://www.anthropic.com/learn/claude-for-work", guide:["Anthropic Learn","Sektion Claude for work","Alle 4 Guides lesen"]},
+    {id:"w2-4", title:"Tutorials Dojo CCAO-F Guide", desc:"Community Guide", link:"https://tutorialsdojo.com/ccao-f-claude-certified-associate-foundations-study-guide/", guide:["Tutorials Dojo öffnen","Domain-Übersichten","Fokus Output Eval + Workflow"]},
+    {id:"w2-5", title:"Sample Questions aus Exam Guide", desc:"Am Ende des PDFs", guide:["Exam Guide PDF öffnen","Sample Questions Sektion","Alle durchrechnen","Falsche: Docs nachlesen"]},
+    {id:"w2-6", title:"Tutorials Dojo Practice (optional)", desc:"~€15", link:"https://portal.tutorialsdojo.com/product/claude-certified-associate-foundations-ccao-f-practice-exams/", guide:["Kauf über Tutorials Dojo","4 Modi + Flashcards"]},
+    {id:"w2-7", title:"🎯 CCAO-F Prüfung buchen", desc:"Pearson VUE", link:"https://anthropic-partners.skilljar.com/claude-certified-associate-foundations-certification", guide:["CCAO-F Kachel <b>Register</b>","Pearson VUE Login","<b>Schedule Exam</b>","OnVUE oder Test Center"]},
+    {id:"w2-8", title:"🎯 CCAO-F Prüfung ablegen", desc:"60 Fragen · 120 Min", cert:"CCAO-F", guide:["30 Min vorher PC neu starten","VPN aus","OnVUE Client","Ausweis bereit"]},
+    {id:"w2-9", title:"Credly Badge + LinkedIn", desc:"Erstes Zertifikat", link:"https://info.credly.com/", guide:["Credly Mail","<b>Accept Badge</b>","<b>Share to LinkedIn</b>"]}
+  ]},
+  { id:"w3", title:"Woche 3 · Claude Code + API", meta:"~5 Std · Developer Fokus", tasks:[
+    {id:"w3-1", title:"Claude Code 101", desc:"12 Lektionen · ~1 Std", link:"https://claude.com/resources/courses", guide:["Suche Claude Code 101","<b>Enroll</b>","Erst CLI installieren"]},
+    {id:"w3-2", title:"Claude Code CLI installieren", desc:"Voraussetzung", link:"https://code.claude.com/docs/en/quickstart", guide:["Terminal öffnen","macOS: brew install claude","Windows: install script","claude login","Test: claude --version"]},
+    {id:"w3-3", title:"Claude Code in Action", desc:"15 Lektionen · ~1 Std", link:"https://anthropic.skilljar.com/claude-code-in-action", guide:["Direktlink","<b>Enroll</b>","Themen: Agent SDK, Hooks"]},
+    {id:"w3-4", title:"Building with the Claude API", desc:"84 Lektionen · 8 Std", link:"https://claude.com/resources/courses", guide:["Auf 2-3 Tage aufteilen","10 Quizzes","Sektionen: Messages API · Tool Use · RAG"]},
+    {id:"w3-5", title:"Claude Cookbook", desc:"Code-Beispiele", link:"https://platform.claude.com/cookbooks", guide:["Cookbook öffnen","Filter: Agents · Tool Use","3 Beispiele nachprogrammieren"]},
+    {id:"w3-6", title:"First Hour with Claude Code", desc:"1 Feature", guide:["Terminal in echtem Repo","claude starten","/init für CLAUDE.md","Kleines Feature bauen"]},
+    {id:"w3-7", title:"Introduction to MCP", desc:"16 Lektionen · ~1 Std", link:"https://anthropic.skilljar.com/introduction-to-model-context-protocol", guide:["Direktlink","MCP Basics","Kleinen MCP Server bauen"]}
+  ]},
+  { id:"w4", title:"Woche 4 · CCDV-F Prüfung", meta:"120 Min · 53 Fragen · $0 Partner", exam:"CCDV-F", tasks:[
+    {id:"w4-1", title:"CCDV-F Exam Guide herunterladen", desc:"Domain-Verteilung", link:"https://anthropic-partners.skilljar.com/claude-certified-developer-foundations-certification", guide:["Partner Academy CCDV-F","<b>Download the exam guide</b>","Apps 33% (Prio) · Model 17% · Agents 15%"]},
+    {id:"w4-2", title:"Tutorials Dojo CCDV-F Guide", desc:"Community Guide", link:"https://tutorialsdojo.com/ccdv-f-claude-certified-developer-foundations-study-guide/", guide:["Study Guide öffnen","Priorisiere Apps & Integration"]},
+    {id:"w4-3", title:"API Best Practices", desc:"Rate Limits, Errors", link:"https://docs.claude.com/en/api/overview", guide:["API Docs","Fokus: Rate Limits · Errors · Streaming","Prompt Caching Konzept"]},
+    {id:"w4-4", title:"Agent SDK Docs", desc:"Multi-Agent, Hooks", link:"https://docs.claude.com/en/agent-sdk/overview", guide:["Agent SDK Docs","Loop · Tool Use · Subagents","Kleinen Agent bauen"]},
+    {id:"w4-5", title:"Tool Use Docs", desc:"Custom Tools", link:"https://docs.claude.com/en/docs/agents-and-tools/tool-use/overview", guide:["Tool Use Docs","Tool Schema Design","tool_use / tool_result Flow"]},
+    {id:"w4-6", title:"Sample Questions aus Exam Guide", desc:"Am Ende PDF", guide:["CCDV-F Exam Guide PDF","Sample Questions durchrechnen"]},
+    {id:"w4-7", title:"Cookbook Agents-Beispiele", desc:"3 Praxis-Beispiele", link:"https://platform.claude.com/cookbooks", guide:["Filter Agents","Support · Multi-turn Tool Use · RAG","API Key aus console.anthropic.com"]},
+    {id:"w4-8", title:"🎯 CCDV-F Prüfung buchen", desc:"Pearson VUE", link:"https://anthropic-partners.skilljar.com/claude-certified-developer-foundations-certification", guide:["CCDV-F Kachel <b>Register</b>","Pearson VUE","Schedule Exam"]},
+    {id:"w4-9", title:"🎯 CCDV-F Prüfung ablegen", desc:"Badge #2", cert:"CCDV-F", guide:["Vorbereitung wie CCAO-F","OnVUE Client 30 Min vor Start"]},
+    {id:"w4-10", title:"Credly + LinkedIn", desc:"Zweites Zertifikat", link:"https://info.credly.com/", guide:["Credly Mail","Accept Badge","Skills: Claude API · Agent SDK · MCP"]}
+  ]},
+  { id:"w5", title:"Woche 5 · MCP & Agent Architecture", meta:"~6 Std · CCA-F Kernthemen", tasks:[
+    {id:"w5-1", title:"MCP Advanced Topics", desc:"15 Lektionen · ~1 Std", link:"https://anthropic.skilljar.com/model-context-protocol-advanced-topics", guide:["Direktlink","Sampling · Notifications · Transports"]},
+    {id:"w5-2", title:"Introduction to Subagents", desc:"4 Lektionen · 20 Min", link:"https://claude.com/resources/courses", guide:["claude.com/resources/courses","Kurs Introduction to subagents","Context-Isolation"]},
+    {id:"w5-3", title:"Introduction to Agent Skills", desc:"6 Lektionen · 30 Min", link:"https://claude.com/resources/courses", guide:["claude.com/resources/courses","Kurs Introduction to agent skills","SKILL.md Frontmatter"]},
+    {id:"w5-4", title:"MCP Documentation", desc:"modelcontextprotocol.io", link:"https://modelcontextprotocol.io/docs", guide:["MCP Docs öffnen","Introduction · Server · Client","Transport-Mechanismen"]},
+    {id:"w5-5", title:"Claude Skills Complete Guide PDF", desc:"Building Skills", link:"https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf", guide:["PDF direkt","Lokal speichern","Alle Kapitel"]},
+    {id:"w5-6", title:"Eigene SKILL.md pushen", desc:"1 Skill pro Person", guide:["Terminal in Repo","skills/[skill]/SKILL.md","Frontmatter","git add commit push"]}
+  ]},
+  { id:"w6", title:"Woche 6 · Prompt Engineering + Cost", meta:"~5 Std · CCA-F Prep 2", tasks:[
+    {id:"w6-1", title:"Prompt Engineering Guide", desc:"20% der CCA-F Prüfung", link:"https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview", guide:["Prompt Engineering Docs","Alle Unterthemen","Be clear · Multishot · CoT · XML tags · Prefill"]},
+    {id:"w6-2", title:"Structured Output + JSON Schemas", desc:"Domain 4 CCA-F", link:"https://docs.claude.com/en/docs/build-with-claude/structured-outputs", guide:["Structured Outputs Docs","response_format Parameter","JSON Schema"]},
+    {id:"w6-3", title:"Model Selection", desc:"Opus vs Sonnet vs Haiku", link:"https://docs.claude.com/en/docs/about-claude/models", guide:["Models Overview","Preise vergleichen","Haiku Klassifikation · Sonnet Default · Opus Reasoning"]},
+    {id:"w6-4", title:"Prompt Caching", desc:"Bis zu 90% Ersparnis", link:"https://docs.claude.com/en/docs/build-with-claude/prompt-caching", guide:["Prompt Caching Docs","cache_control Marker","TTL Optionen"]},
+    {id:"w6-5", title:"Batch API", desc:"50% Ersparnis async", link:"https://docs.claude.com/en/api/batch-api", guide:["Batch API Docs","Wann: Datenextraktion · Bulk","24h Retention"]},
+    {id:"w6-6", title:"Context Management", desc:"15% CCA-F", link:"https://docs.claude.com/en/docs/build-with-claude/context-windows", guide:["Context Windows Docs","Compression · Extended Thinking"]},
+    {id:"w6-7", title:"Rollen-Praxisprojekt", desc:"E2E Task", guide:["Michael: Evergreen ROI Report","Zoe: AMES Content Skill","Christian: Portal Feature","Ludwig: PowerShell CSP Skript"]}
+  ]},
+  { id:"w7", title:"Woche 7 · CCA-F Prüfung", meta:"120 Min · 60 Fragen · Kernprüfung · $0 Partner", exam:"CCA-F", tasks:[
+    {id:"w7-1", title:"CCA-F Exam Guide (v0.2)", desc:"Version 30. Juni 2026", link:"https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification/486716", guide:["Partner Academy CCA-F","<b>Download the exam guide</b>","5 Domains: Agentic 27% · Code 20% · Prompt 20% · Tools 18% · Context 15%"]},
+    {id:"w7-2", title:"Community Exam Guide", desc:"Beste kostenlose Ressource", link:"https://www.anthropiccertifications.com/exam-guide", guide:["Community Exam Guide","Alle 6 Scenarios","Jedes Scenario verstehen"]},
+    {id:"w7-3", title:"GitHub Practice Exam", desc:"77 Fragen · Olivier Legris", link:"https://github.com/OlivierAlter/Claude-Certified-Architect-Foundations-Certification-Exam", guide:["Repo öffnen","Claude Certification Exam.md","77 Fragen mit Erklärungen"]},
+    {id:"w7-4", title:"CCA Prep Community Guide", desc:"170 Fragen + Flashcards", link:"https://github.com/vinipx/cca-prep", guide:["Repo öffnen","Live Study Guide","Mock Exam: 60 Fragen · 90 Min","Anti-Patterns"]},
+    {id:"w7-5", title:"Mock Exam claudecertified.io", desc:"60 Fragen · 90 Min", link:"https://claudecertified.io/practice/mock-exam/", guide:["Mock Exam Seite","<b>Start Mock Exam</b>","Detaillierte Auswertung"]},
+    {id:"w7-6", title:"vkorost Study Guide", desc:"12 Kapitel", link:"https://github.com/vkorost/claude-certified-architect-guide", guide:["Repo öffnen","book/ Ordner","Video-Overview im README"]},
+    {id:"w7-7", title:"Study Plans (3 Paths)", desc:"claudearchitectcertification.com", link:"https://claudearchitectcertification.com/exam-guide", guide:["Exam Guide öffnen","3 Paths wählen","20 Anti-Patterns","Day-of Checklist"]},
+    {id:"w7-8", title:"Prep-Notes von Kollegen", desc:"Eddie Liao, Vipul Choudhary", guide:["Viva Engage","Eddie Liao suchen","Nachricht: Prep-Notes anfragen"]},
+    {id:"w7-9", title:"Team-Mock Session (90 Min)", desc:"Simulierte Prüfung", guide:["Michael blockt 90 Min","Alle 4 gleichzeitig Mock","30 Min Debrief"]},
+    {id:"w7-10", title:"🎯 CCA-F Prüfung buchen", desc:"Pearson VUE", link:"https://anthropic-partners.skilljar.com/claude-certified-architect-foundations-certification/486716", guide:["CCA-F Kachel <b>Register</b>","Pearson VUE","Termin 2-3 Tage nach Team-Mock"]},
+    {id:"w7-11", title:"🎯 CCA-F Prüfung ablegen", desc:"Kernprüfung · Badge #3", cert:"CCA-F", guide:["30 Min vorher PC neu starten","VPN aus · Apps schließen","OnVUE Client","Ausweis bereit"]},
+    {id:"w7-12", title:"Credly + LinkedIn", desc:"Anthropic Certified Architect", link:"https://info.credly.com/", guide:["Credly Mail","Accept Badge","Skills: Agentic AI · MCP · Prompt Engineering"]}
+  ]},
+  { id:"w8", title:"Woche 8 · Enterprise Governance", meta:"~5 Std · CCA-P Kernthemen", tasks:[
+    {id:"w8-1", title:"Multi-Agent Systems Deep Dive", desc:"Coordinator-Subagent", link:"https://docs.claude.com/en/agent-sdk/subagents", guide:["Agent SDK Subagents Docs","Task Decomposition","fork_session vs Sub-Agent"]},
+    {id:"w8-2", title:"CLAUDE.md Hierarchie Advanced", desc:"Path Rules", link:"https://code.claude.com/docs/en/memory", guide:["Claude Code Memory Docs","Global → Project → Directory","@include Path Rules"]},
+    {id:"w8-3", title:"Enterprise Deployment Patterns", desc:"Multi-Cloud = 25% CCA-P!", link:"https://docs.claude.com/en/api/claude-on-amazon-bedrock", guide:["AWS Bedrock Docs","Alternative: Vertex AI","Data Residency · VPC · Regional"]},
+    {id:"w8-4", title:"Security & Compliance", desc:"PII, Data Residency", link:"https://docs.claude.com/en/docs/legal-and-compliance/data-usage", guide:["Data Usage & Privacy Docs","PII Detection","Retention Policies"]},
+    {id:"w8-5", title:"SKILL Library v1 finalisieren", desc:"5 Standard-Skills", guide:["meeting-recap (Zoe)","roi-slide-builder (Michael)","csp-tenant-report (Ludwig)","portal-feature-scaffold (Christian)","ames-content-review (Zoe)"]}
+  ]},
+  { id:"w9", title:"Woche 9 · Case Studies + CCA-P Mock", meta:"~4 Std · Final Prep", tasks:[
+    {id:"w9-1", title:"Advanced Architect Workshop (VILT)", desc:"16 Std Live Workshop", guide:["Viva Learning","Suche Advanced Anthropic Claude Architect Workshop","Nominierung erforderlich"]},
+    {id:"w9-2", title:"Real-World Case Studies", desc:"Anthropic Customer Stories", link:"https://www.anthropic.com/customers", guide:["Customer Stories","Analysiere: Cursor · Perplexity · Notion","Fragen: Architektur? Multi-Cloud?"]},
+    {id:"w9-3", title:"CCA-P Sample Questions", desc:"GenAICerts Free", link:"https://genaicerts.com/certs/anthropic/anthropic-claude-architect-professional/practice-questions", guide:["Practice Questions","Scenario-based","Enterprise Governance Fokus"]},
+    {id:"w9-4", title:"CCA-P How to Pass Guide", desc:"6-Wochen Strategie", link:"https://genaicerts.com/certs/anthropic/anthropic-claude-architect-professional/how-to-pass", guide:["How to Pass Guide","6-Wochen Study Plan","Multi-Cloud 25% · Governance 20%"]},
+    {id:"w9-5", title:"Team-Mock CCA-P (2 Std)", desc:"Governance-Fokus", guide:["Michael blockt 2 Std","GenAICerts Questions","30 Min Debrief"]},
+    {id:"w9-6", title:"Prüfungstermin CCA-P buchen", desc:"Höchste Zertifizierung", link:"https://anthropic-partners.skilljar.com/", guide:["Partner Academy","CCA-P Kachel","<b>Register</b>","1 Woche Puffer"]}
+  ]},
+  { id:"w10", title:"Woche 10 · CCA-P Prüfung", meta:"120-150 Min · Höchste Anthropic Zertifizierung", exam:"CCA-P", tasks:[
+    {id:"w10-1", title:"Am Prüfungstag: Setup", desc:"150 Min ohne Unterbrechung", guide:["24h vorher System Test","60 Min vorher PC neu starten","VPN aus","Ausweis + Wasser"]},
+    {id:"w10-2", title:"🎯 CCA-P Prüfung ablegen", desc:"Badge #4!", cert:"CCA-P", guide:["OnVUE Client 30 Min vor Start","Check-in mit Ausweis","Denke Enterprise: Multi-Cloud · Governance · Scale"]},
+    {id:"w10-3", title:"Alle 4 Badges auf LinkedIn", desc:"Full Stack Certified", link:"https://info.credly.com/", guide:["Credly Profil","4 Badges sichtbar","Share to LinkedIn","Headline updaten"]},
+    {id:"w10-4", title:"Renewal-Erinnerung nach 12 Monaten", desc:"Zertifikate laufen ab", guide:["Outlook Kalender","Termin in 11 Monaten","Free non-proctored assessment"]},
+    {id:"w10-5", title:"Success Story auf Viva Engage", desc:"Team-Erfolg", guide:["Viva Engage","Post in EvolveAI Community","Titel: MWP Team wird erstes Full Stack","Tags: @Egina Malaj @Eddie Liao"]},
+    {id:"w10-6", title:"MyCredential Update", desc:"Interne Anerkennung", guide:["MyCredential auf Intranet","4 Claude Certs","Workday Skills","An Phillip Meyer berichten"]}
+  ]}
+];
+
+const teamDeliverables = [
+  { id:"td-1", title:"Team-Setup", meta:"Repo & Infrastruktur", tasks:[
+    {id:"tds-1", title:"GitHub Team-Repo erstellen", desc:"Owner: Ludwig", guide:["github.com Login","Repo mwp-claude-skills","Private/Internal"]},
+    {id:"tds-2", title:"Zugriffsrechte konfigurieren", desc:"4 Contributors", guide:["Settings Collaborators","Michael Zoe Christian Ludwig","Branch Protection main"]},
+    {id:"tds-3", title:"CI Setup GitHub Actions", desc:"SKILL.md Validierung", guide:[".github/workflows/","validate-skills.yml","Ludwig implementiert"]}
+  ]},
+  { id:"td-2", title:"CLAUDE.md Konventionen", meta:"Owner: Michael", tasks:[
+    {id:"tdc-1", title:"Tonfall & Sprache definieren", desc:"DE/EN Standards", guide:["Sektion Language Tone","DE intern EN extern"]},
+    {id:"tdc-2", title:"Formatvorgaben festlegen", desc:"Markdown, Tabellen", guide:["Sektion Output Formats","Excel-Ready Tabellen"]},
+    {id:"tdc-3", title:"Data Privacy Guardrails", desc:"Kundendaten-Schutz", guide:["Sektion Data Guardrails","Keine Kundendaten in Prompts","Volksbanken Voest BBG Grawe"]},
+    {id:"tdc-4", title:"Review-Regeln festhalten", desc:"Two-Eye Principle", guide:["Portal Christian","CSP Ludwig","Business Michael/Zoe"]},
+    {id:"tdc-5", title:"CLAUDE.md v1.0 committen", desc:"Alle Reviews", guide:["git add commit push","PR mit Christian als Reviewer"]}
+  ]},
+  { id:"td-3", title:"SKILL Library v1", meta:"Owner: Zoe · 5 Skills", tasks:[
+    {id:"tdk-1", title:"meeting-recap (Zoe)", desc:"MWP Practice Recaps", guide:["skills/meeting-recap/SKILL.md","TL;DR Actions Decisions"]},
+    {id:"tdk-2", title:"roi-slide-builder (Michael)", desc:"Evergreen ROI", guide:["skills/roi-slide-builder/SKILL.md","KPIs aus Loop/Teams"]},
+    {id:"tdk-3", title:"csp-tenant-report (Ludwig)", desc:"M365 Tenant Assessment", guide:["PowerShell Companion","Graph API Calls"]},
+    {id:"tdk-4", title:"portal-feature-scaffold (Christian)", desc:"Portal Feature", guide:[".NET Boilerplate","Blazor Component"]},
+    {id:"tdk-5", title:"ames-content-review (Zoe)", desc:"AMES Content QA", guide:["QA-Checkliste","AMES Editorial Standard"]}
+  ]},
+  { id:"td-4", title:"Governance & Guardrails", meta:"Verbindlich ab Tag 1", tasks:[
+    {id:"tdg-1", title:"Data Privacy Policy dokumentieren", desc:"Team-Standard", guide:["docs/DATA_PRIVACY.md","Escalation Contact"]},
+    {id:"tdg-2", title:"Review-Matrix definieren", desc:"Wer reviewt was", guide:["docs/REVIEW_MATRIX.md","Nach Domain"]},
+    {id:"tdg-3", title:"Freitag Review-Session", desc:"30 Min wöchentlich", guide:["Freitag 15:00","Jede Person 5 Min"]}
+  ]},
+  { id:"td-5", title:"🏆 Erfolgskriterien", meta:"Nach 10 Wochen", tasks:[
+    {id:"tde-1", title:"Alle 4 haben Claude 101 + AI Fluency"},
+    {id:"tde-2", title:"Alle 4 haben CCAO-F Associate", desc:"Woche 2 · 4 Badges"},
+    {id:"tde-3", title:"Ludwig + Christian haben CCDV-F", desc:"Woche 4 · 6 Badges"},
+    {id:"tde-4", title:"Alle 4 haben CCA-F Architect", desc:"Woche 7 · 10 Badges"},
+    {id:"tde-5", title:"Michael + Zoe + Christian haben CCA-P", desc:"Woche 10 · 13-16 Badges"},
+    {id:"tde-6", title:"CLAUDE.md + 5 SKILL.md im Repo"},
+    {id:"tde-7", title:"Erstes Anthropic Full Stack Team in Avanade Austria/Germany"}
+  ]}
+];
+
+function loadState(id){try{return JSON.parse(localStorage.getItem("cf-"+id)||"{}");}catch(e){return {};}}
+function saveState(id,s){localStorage.setItem("cf-"+id,JSON.stringify(s));}
+function loadCollapsed(id){try{return JSON.parse(localStorage.getItem("cf-cp-"+id)||"{}");}catch(e){return {};}}
+function saveCollapsed(id,s){localStorage.setItem("cf-cp-"+id,JSON.stringify(s));}
+function getWeeksFor(id){return id==="team"?teamDeliverables:commonWeeks;}
+function countTasks(id){var t=0;getWeeksFor(id).forEach(function(w){t+=w.tasks.length;});return t;}
+function countChecked(id){var s=loadState(id),d=0;getWeeksFor(id).forEach(function(w){w.tasks.forEach(function(t){if(s[t.id])d++;});});return d;}
+function getPercent(id){var t=countTasks(id);return t===0?0:Math.round(countChecked(id)/t*100);}
+function getEarnedCerts(id){var p=team.find(function(x){return x.id===id;});if(!p)return [];var st=loadState(id),e=[];for(var c in p.certs){var wk=commonWeeks.find(function(w){return w.exam===c;});if(wk){var ex=wk.tasks.find(function(t){return t.cert===c;});if(ex&&st[ex.id])e.push(c);}}return e;}
+function getRequiredCerts(id){var p=team.find(function(x){return x.id===id;});if(!p)return [];return Object.keys(p.certs).filter(function(c){return p.certs[c]==="required";});}
+function getTeamCertProgress(){var target=0,earned=0;team.forEach(function(p){for(var c in p.certs){if(p.certs[c]==="required"){target++;if(getEarnedCerts(p.id).indexOf(c)>-1)earned++;}}});return {target:target,earned:earned};}
+function getTeamPercent(){var t=0,d=0;team.forEach(function(x){t+=countTasks(x.id);d+=countChecked(x.id);});return t===0?0:Math.round(d/t*100);}
+
+var activeTab="michael";
+
+function renderTabs(){
+  var tabs=document.getElementById("tabs");tabs.innerHTML="";
+  var all=team.concat([{id:"team",name:"Team",emoji:"🤝"}]);
+  all.forEach(function(p){
+    var btn=document.createElement("button");
+    btn.className="tab"+(activeTab===p.id?" active":"");
+    var meta=p.id==="team"?"Deliverables":getEarnedCerts(p.id).length+"/"+getRequiredCerts(p.id).length+" 🏆 · "+getPercent(p.id)+"%";
+    btn.innerHTML='<span class="tab-emoji">'+p.emoji+'</span><div class="tab-content"><div class="tab-name">'+p.name.split(" ")[0]+'</div><div class="tab-meta">'+meta+'</div></div>';
+    btn.onclick=function(pid){return function(){activeTab=pid;render();};}(p.id);
+    tabs.appendChild(btn);
+  });
+}
+
+function renderContent(){
+  var content=document.getElementById("content");
+  var isTeam=activeTab==="team";
+  var person=isTeam?{name:"Team-Deliverables",role:"Gemeinsame Standards",emoji:"🤝",focus:"CLAUDE.md · SKILL Repo",location:""}:team.find(function(p){return p.id===activeTab;});
+  var weeks=getWeeksFor(activeTab);
+  var state=loadState(activeTab);
+  var collapsed=loadCollapsed(activeTab);
+  var percent=getPercent(activeTab);
+  var total=countTasks(activeTab);
+  var done=countChecked(activeTab);
+
+  var html='<div class="profile-card"><div class="profile-info"><h2><span>'+person.emoji+'</span> '+person.name+'</h2><div class="profile-role">'+person.role+(person.location?" · 📍 "+person.location:"")+'</div><div class="profile-focus">'+person.focus+'</div><div style="margin-top:16px;font-size:13px;color:var(--text-muted)"><strong>'+done+'/'+total+'</strong> Tasks · <strong>'+percent+'%</strong> Fortschritt</div></div></div>';
+
+  html+=isTeam?'<div class="info-panel"><div class="info-panel-title">Team-Deliverables</div><strong>Gemeinsame Standards.</strong> Ziel: 13–16 Anthropic Badges in 10 Wochen. $0 Kosten für Partner.</div>':'<div class="info-panel"><div class="info-panel-title">Full Stack Ziel</div>Bis zu 4 Anthropic Zertifizierungen. Jeder Task hat einen <strong>Direktlink</strong> oder eine <strong>ausklappbare Klick-Anleitung</strong>. Öffnungswert ~$524/Person – für Partner $0.</div>';
+
+  weeks.forEach(function(w){
+    var wt=w.tasks.length;
+    var wd=w.tasks.filter(function(t){return state[t.id];}).length;
+    var wc=wd===wt;
+    var ic=collapsed[w.id];
+    var isEx=w.exam;
+    var mCls="",sPill="";
+    if(isEx&&!isTeam){
+      var cs=person.certs&&person.certs[isEx];
+      if(cs==="optional"){mCls="exam-optional";sPill='<span class="status-pill optional">Optional</span>';}
+      else{mCls="exam";sPill='<span class="status-pill exam">Prüfung</span>';}
+    }else if(isEx){mCls="exam";sPill='<span class="status-pill exam">Prüfung</span>';}
+    if(wc){mCls+=" done";sPill='<span class="status-pill done">Fertig</span>';}
+    else if(wd>0){sPill='<span class="status-pill progress">'+wd+'/'+wt+'</span>';}
+    else if(!sPill){sPill='<span class="status-pill locked">Offen</span>';}
+    if(ic)mCls+=" collapsed";
+    var num=wc?"✓":w.id.replace("w","").replace("td-","");
+
+    html+='<div class="module '+mCls+'"><div class="module-header" onclick="toggleModule(\''+w.id+'\')"><div class="module-number">'+num+'</div><div class="module-info"><div class="module-title">'+w.title+'</div><div class="module-meta">'+w.meta+'</div></div><div class="module-actions">'+sPill+'<span class="chevron">▾</span></div></div><div class="task-list">';
+
+    w.tasks.forEach(function(t){
+      var ch=state[t.id]?"checked":"";
+      var linkHtml="";
+      if(t.link){
+        linkHtml=''+t.link+'🔗 Direkt zum Link</a>';
+      }
+      var guideHtml="";
+      if(t.guide&&t.guide.length){
+        var steps="";
+        t.guide.forEach(function(g){steps+="<li>"+g+"</li>";});
+        guideHtml='<div class="task-guide" id="guide-'+t.id+'"><button class="task-guide-toggle" onclick="toggleGuide(\''+t.id+'\');event.preventDefault();"><span class="task-guide-title">📍 So kommst du hin ('+t.guide.length+' Schritte)</span><span class="task-guide-chevron">▸</span></button><div class="task-guide-body"><ol>'+steps+'</ol></div></div>';
+      }
+      html+='<label class="task"><input type="checkbox" '+ch+' onchange="toggleTask(\''+t.id+'\')"><div class="task-content"><div class="task-title">'+t.title+'</div>'+(t.desc?'<div class="task-desc">'+t.desc+'</div>':"")+linkHtml+guideHtml+'</div></label>';
+    });
+    html+='</div></div>';
+  });
+
+  html+='<div class="action-bar"><button class="btn" onclick="resetPerson()">↺ Fortschritt zurücksetzen</button><button class="btn btn-primary" onclick="expandAll()">Alle einklappen/ausklappen</button></div>';
+
+  content.innerHTML=html;
+}
+
+function updateTeamStats(){
+  var p=getTeamPercent();
+  document.getElementById("teamProgressFill").style.width=p+"%";
+  document.getElementById("teamPercentValue").textContent=p+"%";
+  var c=getTeamCertProgress();
+  document.getElementById("teamCertCount").textContent=c.earned+" / "+c.target;
+  var cp=c.target===0?0:c.earned/c.target*100;
+  document.getElementById("teamCertFill").style.width=cp+"%";
+}
+
+function render(){renderTabs();renderContent();updateTeamStats();}
+function toggleTask(tid){var s=loadState(activeTab);s[tid]=!s[tid];saveState(activeTab,s);render();}
+function toggleModule(wid){var c=loadCollapsed(activeTab);c[wid]=!c[wid];saveCollapsed(activeTab,c);render();}
+function toggleGuide(tid){var el=document.getElementById("guide-"+tid);if(el)el.classList.toggle("open");}
+function expandAll(){var w=getWeeksFor(activeTab);var c=loadCollapsed(activeTab);var any=w.some(function(x){return !c[x.id];});var n={};w.forEach(function(x){n[x.id]=any;});saveCollapsed(activeTab,n);render();}
+function resetPerson(){if(!confirm("Fortschritt wirklich zurücksetzen?"))return;saveState(activeTab,{});render();}
+
+render();
+
+</script>
+</body>
+</html>
